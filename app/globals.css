@@ -1,0 +1,23 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.custom-gutter {
+  background-color: #555; /* Default color of the splitter bar */
+  cursor: col-resize; /* Cursor style for horizontal resizing */
+  display: flex;
+  justify-content: center; /* Center the symbol horizontally */
+  align-items: center; /* Center the symbol vertically */
+  transition: background-color 0.3s ease; /* Smooth transition for background color */
+  position: relative; /* Position for absolute symbol placement */
+}
+
+.custom-gutter:hover {
+  background-color: #55b8ff; /* Highlight color when hovered */
+}
+
+.gutter-symbol {
+  color: rgb(255, 239, 246); /* Symbol color */
+  font-size: 20px; /* Adjust the size of the symbol */
+  pointer-events: none; /* Prevent symbol from interfering with dragging */
+}
