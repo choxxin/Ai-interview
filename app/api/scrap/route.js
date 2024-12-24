@@ -1,8 +1,8 @@
 import * as cheerio from "cheerio";
 
-export async function GET(request) {
+export async function POST(req) {
   try {
-    const url = "https://leetcode.com/problems/4sum/description/";
+    const { url } = await req.json();
 
     // Custom headers to simulate a real browser request
     const headers = {

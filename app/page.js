@@ -1,8 +1,8 @@
 "use client";
 import Image from "next/image";
 
-import CodeEditor from "./components/codeEditor";
+import CodeEditorWithQuestion from "./Pages/codeeditorpanel/page";
 
 export default function Home() {
-  return <CodeEditor />;
+  return <CodeEditorWithQuestion />;
 }

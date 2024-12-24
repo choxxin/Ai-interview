@@ -1,13 +1,45 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { Editor } from "@monaco-editor/react";
-import Split from "react-split";
-import { CODE_SNIPPETS } from "./constants";
+
 import LanguageSelector from "./LanguageSelector";
-import QuestionPanel from "./QuestionPanel";
-const CodeEditor = () => {
+
+const CodeEditor = ({ codeSnippets }) => {
   const editorRef = useRef();
   const [value, setValue] = useState("");
-  const [language, setLanguage] = useState("python");
+  const [language, setLanguage] = useState("javascript");
+
+  const CODE_SNIPPETS = {
+    javascript: `\nfunction greet(name) {\n\tconsole.log("Hello, " + name + "!");\n}\n\ngreet("Alex");\n`,
+    typescript: `\ntype Params = {\n\tname: string;\n}\n\nfunction greet(data: Params) {\n\tconsole.log("Hello, " + data.name + "!");\n}\n\ngreet({ name: "Alex" });\n`,
+    python: `\ndef greet(name):\n\tprint("Hello, " + name + "!")\n\ngreet("Alex")\n`,
+    java: `\npublic class HelloWorld {\n\tpublic static void main(String[] args) {\n\t\tSystem.out.println("Hello World");\n\t}\n}\n`,
+    csharp: `using System;\n\nnamespace HelloWorld\n{\n\tclass Hello {\n\t\tstatic void Main(string[] args) {\n\t\t\tConsole.WriteLine("Hello World in C#");\n\t\t}\n\t}\n}\n`,
+    php: "<?php\n\n$name = 'Alex';\necho $name;\n",
+    cpp: `\nclass Solution{\n\t\tpublic:\n\t\t\tvoid sayHello(){\n\t\t\tcout<<"Hello World in C++"<<endl;\n\t\t}\n};\n\nint main(){\n\tSolution obj;\n\tobj.sayHello();\n\treturn 0;\n}`,
+    go: 'package main\n\nimport "fmt"\n\nfunc main() {\n\tfmt.Println("Hello World in Go")\n}\n',
+    rust: `fn main() {\n\tprintln!("Hello World in Rust");\n}\n`,
+    c: `#include <stdio.h>\n\nint main() {\n\tprintf("Hello World in C");\n\treturn 0;\n}\n`,
+    python3: `print("Hello World in Python 3")\n`,
+  };
+
+  // Populate CODE_SNIPPETS with provided code snippets
+  codeSnippets.forEach((snippet) => {
+    // Handle special cases for C++ and C#
+    let lang = snippet.language.toLowerCase();
+    if (lang == "c++") {
+      CODE_SNIPPETS["cpp"] = snippet.code; // Correctly assign the code to the 'c++' key
+    } else if (lang == "c#") {
+      CODE_SNIPPETS["csharp"] = snippet.code; // Correctly assign the code to the 'c#' key
+    }
+    if (CODE_SNIPPETS[lang] !== undefined) {
+      CODE_SNIPPETS[lang] = snippet.code; // For other languages, update normally
+    }
+  });
+
+  useEffect(() => {
+    // Set the initial code for the selected language
+    setValue(CODE_SNIPPETS[language] || ""); // Provide a fallback if the language is not found
+  }, [language]);
 
   const onMount = (editor) => {
     editorRef.current = editor;
@@ -16,7 +48,7 @@ const CodeEditor = () => {
 
   const handleLanguageChange = (newLanguage) => {
     setLanguage(newLanguage);
-    setValue(CODE_SNIPPETS[newLanguage] || ""); // Update the code snippet for the selected language
+    setValue(CODE_SNIPPETS[newLanguage] || ""); // Provide a fallback if the language is not found
   };
 
   return (
@@ -25,7 +57,6 @@ const CodeEditor = () => {
         selectedLanguage={language}
         onSelectLanguage={handleLanguageChange}
       />
-      ,
       <Editor
         options={{
           minimap: {
@@ -36,7 +67,7 @@ const CodeEditor = () => {
         height="100%"
         theme="vs-dark"
         language={language}
-        defaultValue={CODE_SNIPPETS[language]}
+        defaultValue={CODE_SNIPPETS[language] || ""} // Ensure defaultValue is valid
         onMount={onMount}
         value={value}
         onChange={(value) => setValue(value)}
@@ -45,60 +76,4 @@ const CodeEditor = () => {
   );
 };
 
-// const QuestionPanel = () => {
-//   return (
-//     <div
-//       style={{
-//         padding: "16px",
-//         backgroundColor: "gray",
-//         height: "100%",
-//       }}
-//     >
-//       <h2>Question</h2>
-//       <p>
-//         Write a program that implements a binary search algorithm. The input is
-//         a sorted array, and the output should indicate whether a given number is
-//         present in the array.
-//       </p>
-//     </div>
-//   );
-// };
-
-const CodeEditorWithQuestion = () => {
-  return (
-    <Split
-      sizes={[55, 45]}
-      minSize={200}
-      gutterSize={14} // Width of the splitter bar
-      gutterAlign="center"
-      style={{
-        height: "100vh",
-        display: "flex",
-        backgroundColor: "#3a3a3a",
-      }}
-      gutter={() => {
-        // Create a custom gutter element with a symbol
-        const gutter = document.createElement("div");
-        gutter.className = "custom-gutter";
-        const symbol = document.createElement("div");
-        symbol.className = "gutter-symbol ";
-        symbol.innerHTML = "&#9679;"; // Unicode for a filled circle
-        gutter.appendChild(symbol);
-        return gutter;
-      }}
-    >
-      <QuestionPanel />
-      <CodeEditor />
-    </Split>
-  );
-};
-
-export default CodeEditorWithQuestion;
-/*
-Explnation 
-
-1)Custom Gutter: The gutter function in the Split component allows you to create a custom element for the splitter bar. Here, we are assigning it the custom-gutter class.
-2)CSS Styles: The default and hover styles for the custom-gutter class control the appearance of the splitter bar. When hovered, the background color changes to green (#00ff00).
-3)Smooth Transition: The transition property ensures a smooth color change when hovering over the splitter.
-
-*/
+export default CodeEditor;
