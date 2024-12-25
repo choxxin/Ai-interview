@@ -42,16 +42,20 @@ export async function POST(req) {
       throw new Error("Failed to locate question data in JSON");
     }
 
-    // Extract code snippets
+    // Extract required data
     const codeSnippets = questionData.codeSnippets || [];
     const description = $('meta[name="description"]').attr("content");
+    const titleSlug = questionData.titleSlug || "No slug found";
+    const exampleTestcaseList = questionData.exampleTestcaseList || [];
+
     const result = {
       title: questionData.title || "No title found",
-
+      slug: titleSlug,
       id: questionData.questionId || "n/a",
       stats: questionData.stats || "No stats found",
       description: description || "No description found",
       difficulty: questionData.difficulty || "No difficulty found",
+      exampleTestcaseList: exampleTestcaseList,
       codeSnippets: codeSnippets.map((snippet) => ({
         language: snippet.lang,
         code: snippet.code,

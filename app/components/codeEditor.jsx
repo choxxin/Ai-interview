@@ -3,9 +3,9 @@ import { Editor } from "@monaco-editor/react";
 
 import LanguageSelector from "./LanguageSelector";
 
-const CodeEditor = ({ codeSnippets }) => {
+const CodeEditor = ({ codeSnippets, slug, exampleTestcaseList, id }) => {
   const editorRef = useRef();
-  const [value, setValue] = useState("");
+  const [value, setValue] = useState("ewfew");
   const [language, setLanguage] = useState("javascript");
 
   const CODE_SNIPPETS = {
@@ -54,8 +54,12 @@ const CodeEditor = ({ codeSnippets }) => {
   return (
     <div className="flex flex-col justify-start">
       <LanguageSelector
+        slug={slug}
         selectedLanguage={language}
+        value={value}
         onSelectLanguage={handleLanguageChange}
+        exampleTestcaseList={exampleTestcaseList}
+        id={id}
       />
       <Editor
         options={{
