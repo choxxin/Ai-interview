@@ -1,6 +1,15 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+/* Add this CSS to your global or component-specific CSS */
+.drawer-container {
+  max-height: 80vh;
+  overflow-y: auto;
+  background-color: #fff; /* Or any background color */
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+}
 
 .custom-gutter {
   background-color: #555; /* Default color of the splitter bar */
@@ -20,4 +29,10 @@
   color: rgb(255, 239, 246); /* Symbol color */
   font-size: 20px; /* Adjust the size of the symbol */
   pointer-events: none; /* Prevent symbol from interfering with dragging */
+}
+
+@layer base {
+  :root {
+    --radius: 0.5rem;
+  }
 }

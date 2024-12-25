@@ -1,5 +1,6 @@
+import { DrawerDemo } from "@/app/components/Drawer";
 import React, { useState, useEffect } from "react";
-
+import useResponseStore from "../Zustand/runresponse";
 const LanguageSelector = ({
   selectedLanguage,
   onSelectLanguage,
@@ -19,7 +20,7 @@ const LanguageSelector = ({
     { label: "C", value: "c" },
     { label: "Python3", value: "python3" },
   ];
-
+  const { response, loading, setResponse, setLoading } = useResponseStore();
   const [xcsrftoken, setXcsrftoken] = useState("");
   const [cookie, setCookie] = useState("");
 
@@ -35,108 +36,84 @@ const LanguageSelector = ({
     "Sec-CH-UA-Mobile": "?1",
     "X-CSRFToken": xcsrftoken,
     Cookie: cookie,
+    "Content-Type": "application/json",
+    Accept: "*/*",
   };
-  const handleRun = async () => {
-    const body = {
-      slug: slug,
-      lang: selectedLanguage,
-      question_id: id,
-      typed_code: value,
-      data_input: exampleTestcaseList.join("\n"),
-      xcsrftoken: xcsrftoken,
-      cookie: cookie,
-    };
 
+  const handleRun = async () => {
+    setLoading(true);
     try {
-      // Make the first fetch request
+      const body = {
+        slug,
+        lang: selectedLanguage,
+        question_id: id,
+        typed_code: value,
+        data_input: exampleTestcaseList.join("\n"),
+        xcsrftoken,
+        cookie,
+      };
+
       const response = await fetch("http://localhost:3000/api/leetcoderun", {
         method: "POST",
-        headers: {
-          Accept: "*/*", // The value should be "*/*" or another valid value for Accept
-          "Accept-Encoding": "gzip, deflate, br, zstd",
-          "Accept-Language": "en-GB,en;q=0.8",
-          "Content-Type": "application/json",
-          Referer: "https://leetcode.com/problems/longest-common-prefix/",
-          Origin: "https://leetcode.com", // Uncomment if needed
-          "Sec-CH-UA":
-            '"Brave";v="131", "Chromium";v="131", "Not_A Brand";v="24"', // Uncomment if needed
-          "Sec-CH-UA-Mobile": "?1", // Uncomment if needed
-          "Sec-CH-UA-Platform": '"Android"', // Uncomment if needed
-          "Sec-Fetch-Dest": "empty", // Uncomment if needed
-          "Sec-Fetch-Mode": "same-origin", // Uncomment if needed
-          "Sec-GPC": "1", // Uncomment if needed
-          "User-Agent":
-            "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Mobile Safari/537.36", // Uncomment if needed
-          "X-CSRFToken": xcsrftoken, // Uncomment if
-          Cookie: cookie,
-        },
+        headers,
         body: JSON.stringify(body),
       });
 
-      // Parse the result to get the interpret_id
       const result = await response.json();
       console.log("Run result:", result);
 
-      const interpret_id = result.interpret_id;
-
-      // Poll the submission status
-      await pollSubmissionStatus(interpret_id);
+      if (result?.interpret_id) {
+        await pollSubmissionStatus(result.interpret_id);
+      } else {
+        console.error("Interpret ID not found in response.");
+      }
     } catch (error) {
       console.error("Failed to run the code:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
   const pollSubmissionStatus = async (interpret_id) => {
-    const statusUrl = `http://localhost:3000/api/runcheck`;
-    let requestCount = 0; // Counter for the number of requests made
+    let requestCount = 0;
+    const maxRequests = 20;
 
     const checkStatus = async () => {
-      try {
-        // Stop polling after 20 requests
-        if (requestCount >= 20) {
-          console.log("Stopped polling after 20 requests.");
-          return;
-        }
+      if (requestCount >= maxRequests) {
+        console.log("Stopped polling after 20 requests.");
 
-        const response = await fetch(statusUrl, {
-          method: "POST", // Use GET method as it's a status check
-          headers: {
-            "X-CSRFToken": xcsrftoken, // Include CSRF token
-            Cookie: cookie, // Include cookies if necessary
-          },
-          body: JSON.stringify({
-            "x-csrftoken": xcsrftoken, // Include CSRF token
-            cookie: cookie, // Include cookies if necessary
-            slug: slug, // Include
-            interpret_id: interpret_id, // Include the interpret
-          }),
+        return;
+      }
+
+      try {
+        const response = await fetch("http://localhost:3000/api/runcheck", {
+          method: "POST",
+          headers,
+          body: JSON.stringify({ interpret_id, slug }),
         });
 
         const statusData = await response.json();
         console.log("Submission status:", statusData);
 
-        // Increment the request count
-        requestCount++;
-
-        // Check if the state is success
         if (statusData.state === "SUCCESS") {
           console.log("Submission succeeded:", statusData);
+          setResponse(statusData);
+          setLoading(false);
         } else if (statusData.state === "PENDING") {
-          // If the state is still pending, poll again after 2 seconds
-          console.log("Still pending, retrying...");
-          setTimeout(checkStatus, 2000); // Poll again after 2 seconds
+          requestCount++;
+          setTimeout(checkStatus, 2000);
         } else {
-          // Handle other states or errors
-          console.error("Unexpected state:", statusData.state);
-          setTimeout(checkStatus, 2000); // Retry after 2 seconds
+          console.log("Unexpected state:", statusData.state);
+          setTimeout(checkStatus, 2000);
+          setLoading(false);
         }
       } catch (error) {
+        setLoading(false);
         console.error("Failed to fetch status:", error);
-        setTimeout(checkStatus, 2000); // Retry after 2 seconds
+        setTimeout(checkStatus, 2000);
       }
     };
 
-    // Start checking the status
     checkStatus();
   };
 
@@ -175,6 +152,7 @@ const LanguageSelector = ({
       </div>
 
       <div className="mr-9" style={{ display: "flex", gap: "10px" }}>
+        <DrawerDemo />
         <button
           className="w-24"
           type="button"
@@ -182,15 +160,13 @@ const LanguageSelector = ({
           style={{
             padding: "8px 16px",
             borderRadius: "4px",
-            backgroundColor: "#4CAF50", // Green for "Run"
+            backgroundColor: loading ? "#ccc" : "#4CAF50", // Gray if loading
             color: "white",
             border: "none",
-            cursor: "pointer",
+            cursor: loading ? "not-allowed" : "pointer",
             transition: "background-color 0.3s",
           }}
-          onMouseEnter={(e) => (e.target.style.backgroundColor = "#45a049")}
-          onMouseLeave={(e) => (e.target.style.backgroundColor = "#4CAF50")}
-          disabled={!selectedLanguage}
+          disabled={loading || !selectedLanguage}
         >
           Run
         </button>
@@ -207,8 +183,6 @@ const LanguageSelector = ({
             cursor: "pointer",
             transition: "background-color 0.3s",
           }}
-          onMouseEnter={(e) => (e.target.style.backgroundColor = "#0056b3")}
-          onMouseLeave={(e) => (e.target.style.backgroundColor = "#007BFF")}
           disabled={!selectedLanguage}
         >
           Submit

@@ -27,7 +27,13 @@ const CodeEditorWithQuestion = () => {
             body: JSON.stringify({ url: link }),
           });
           if (!response.ok)
-            throw new Error(`Error fetching data: ${response.statusText}`);
+            return (
+              <div className="flex items-center justify-center h-screen bg-gray-900 text-gray-200">
+                <h2 className="text-2xl font-semibold">
+                  Failed to load question data.
+                </h2>
+              </div>
+            );
           const data = await response.json();
           setQuestionData(data);
         } catch (error) {
