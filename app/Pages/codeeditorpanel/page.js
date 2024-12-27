@@ -1,4 +1,5 @@
 "use client";
+
 import { useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
 import Split from "react-split";
@@ -7,6 +8,8 @@ import CodeEditor from "@/app/components/CodeEditor";
 import Timer from "@/app/components/Timer";
 import { FaKey } from "react-icons/fa6";
 import CsrfCookieForm from "@/app/components/tokendropdown";
+import { DrawerDemo } from "@/app/components/Drawer";
+import { DrawerDemosub } from "@/app/components/Drawersub";
 
 const CodeEditorWithQuestion = () => {
   const searchParams = useSearchParams();
@@ -73,41 +76,58 @@ const CodeEditorWithQuestion = () => {
 
   return (
     <div>
-      <div className="navbar" style={{ backgroundColor: "#2C2C2C" }}>
-        <div className="flex-1">
-          <a className="btn btn-ghost text-xl text-white">daisyUI</a>
-          <details className="dropdown mr-5 ">
-            <summary className="btn m-1">
+      <div
+        className="navbar"
+        style={{
+          backgroundColor: "#2C2C2C",
+          padding: "0 16px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+        }}
+      >
+        <div className="flex items-center space-x-4">
+          <a className="text-xl font-semibold text-white">daisyUI</a>
+          <details className="dropdown">
+            <summary
+              className="btn btn-ghost"
+              style={{
+                padding: "8px 12px",
+                backgroundColor: "transparent",
+                color: "white",
+                borderRadius: "4px",
+              }}
+              aria-label="Dropdown Menu"
+            >
               <FaKey />
             </summary>
-            <ul className="menu dropdown-content   rounded-box z-[1] min-w-52 p-2 shadow bg-black ">
+            <ul
+              className="menu dropdown-content bg-black rounded-box z-[1] min-w-52 p-2 shadow"
+              style={{ color: "white" }}
+            >
               <li>
                 <CsrfCookieForm />
               </li>
             </ul>
           </details>
         </div>
-        <Timer />
-        <div className="flex-none">
-          {/* User Avatar and Cart */}
-          <div className="dropdown dropdown-end">
-            <div
-              tabIndex={0}
-              role="button"
-              className="btn btn-ghost btn-circle"
-            >
-              {" "}
-            </div>
-          </div>
+
+        <div className="flex items-center space-x-4">
+          <DrawerDemo />
+          <DrawerDemosub />
+          <Timer />
+
+          {/* Avatar and Dropdown */}
           <div className="dropdown dropdown-end">
             <div
               tabIndex={0}
               role="button"
               className="btn btn-ghost btn-circle avatar"
+              aria-label="User Menu"
             >
-              <div className="w-10 rounded-full">
+              <div className="w-10 rounded-full overflow-hidden border border-gray-500">
                 <img
-                  alt="Tailwind CSS Navbar component"
+                  alt="User Avatar"
                   src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
                 />
               </div>
@@ -115,11 +135,12 @@ const CodeEditorWithQuestion = () => {
             <ul
               tabIndex={0}
               className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow"
+              style={{ backgroundColor: "#FFFFFF" }}
             >
               <li>
                 <a className="justify-between">
                   Profile
-                  <span className="badge">New</span>
+                  <span className="badge bg-blue-500 text-white">New</span>
                 </a>
               </li>
               <li>
@@ -132,6 +153,7 @@ const CodeEditorWithQuestion = () => {
           </div>
         </div>
       </div>
+
       <Split
         sizes={[55, 45]}
         minSize={200}
@@ -140,13 +162,13 @@ const CodeEditorWithQuestion = () => {
         style={{
           height: "100vh",
           display: "flex",
-          backgroundColor: "#3a3a3a",
+          backgroundColor: "#3A3A3A",
         }}
         gutter={() => {
           const gutter = document.createElement("div");
           gutter.className = "custom-gutter";
           const symbol = document.createElement("div");
-          symbol.className = "gutter-symbol ";
+          symbol.className = "gutter-symbol";
           symbol.innerHTML = "&#9679;";
           gutter.appendChild(symbol);
           return gutter;

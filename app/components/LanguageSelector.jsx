@@ -1,6 +1,8 @@
 import { DrawerDemo } from "@/app/components/Drawer";
 import React, { useState, useEffect } from "react";
 import useResponseStore from "../Zustand/runresponse";
+import useSubmissionStore from "../Zustand/submitresponse";
+import { DrawerDemosub } from "./Drawersub";
 const LanguageSelector = ({
   selectedLanguage,
   onSelectLanguage,
@@ -20,10 +22,10 @@ const LanguageSelector = ({
     { label: "C", value: "c" },
     { label: "Python3", value: "python3" },
   ];
-  const { response, loading, setResponse, setLoading } = useResponseStore();
+  const { loading, setResponse, setLoading } = useResponseStore();
   const [xcsrftoken, setXcsrftoken] = useState("");
   const [cookie, setCookie] = useState("");
-
+  const { setLoadingsubmit, setSubmit } = useSubmissionStore();
   useEffect(() => {
     const storedXcsrftoken = localStorage.getItem("X-CSRF-Token");
     const storedCookie = localStorage.getItem("Cookie");
@@ -38,6 +40,39 @@ const LanguageSelector = ({
     Cookie: cookie,
     "Content-Type": "application/json",
     Accept: "*/*",
+  };
+  const handlesubmit = async () => {
+    setLoadingsubmit(true);
+    try {
+      const body = {
+        slug,
+        lang: selectedLanguage,
+        question_id: id,
+        typed_code: value,
+        xcsrftoken,
+
+        cookie,
+      };
+
+      const response = await fetch("http://localhost:3000/api/leetcodesubmit", {
+        method: "POST",
+        headers,
+        body: JSON.stringify(body),
+      });
+
+      const result = await response.json();
+      if (result?.submission_id) {
+        await pollSubmissionStatussubmit(result.submission_id);
+      } else {
+        //To makes sure that the user is authenticated //next feature
+        console.error("Interpret ID not found in response.");
+      }
+      console.log("Submit result:", result);
+    } catch (error) {
+      console.error("Failed to submit the code:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleRun = async () => {
@@ -63,18 +98,17 @@ const LanguageSelector = ({
       console.log("Run result:", result);
 
       if (result?.interpret_id) {
-        await pollSubmissionStatus(result.interpret_id);
+        await pollSubmissionStatusrun(result.interpret_id);
       } else {
+        //To makes sure that the user is authenticated //next feature
         console.error("Interpret ID not found in response.");
       }
     } catch (error) {
       console.error("Failed to run the code:", error);
-    } finally {
-      setLoading(false);
     }
   };
 
-  const pollSubmissionStatus = async (interpret_id) => {
+  const pollSubmissionStatusrun = async (interpret_id) => {
     let requestCount = 0;
     const maxRequests = 20;
 
@@ -109,6 +143,48 @@ const LanguageSelector = ({
         }
       } catch (error) {
         setLoading(false);
+        console.error("Failed to fetch status:", error);
+        setTimeout(checkStatus, 2000);
+      }
+    };
+
+    checkStatus();
+  };
+  const pollSubmissionStatussubmit = async (submission_id) => {
+    let requestCount = 0;
+    const maxRequests = 20;
+
+    const checkStatus = async () => {
+      if (requestCount >= maxRequests) {
+        console.log("Stopped polling after 20 requests.");
+
+        return;
+      }
+
+      try {
+        const response = await fetch("http://localhost:3000/api/submitcheck", {
+          method: "POST",
+          headers,
+          body: JSON.stringify({ submission_id, slug, xcsrftoken, cookie }),
+        });
+
+        const statusData = await response.json();
+        console.log("Submission status:", statusData);
+
+        if (statusData.state === "SUCCESS") {
+          console.log("Submission succeeded:", statusData);
+          setSubmit(statusData);
+          setLoadingsubmit(false);
+        } else if (statusData.state === "PENDING") {
+          requestCount++;
+          setTimeout(checkStatus, 2000);
+        } else {
+          console.log("Unexpected state:", statusData.state);
+          setTimeout(checkStatus, 2000);
+          setLoadingsubmit(false);
+        }
+      } catch (error) {
+        setLoadingsubmit(false);
         console.error("Failed to fetch status:", error);
         setTimeout(checkStatus, 2000);
       }
@@ -152,8 +228,9 @@ const LanguageSelector = ({
       </div>
 
       <div className="mr-9" style={{ display: "flex", gap: "10px" }}>
-        <DrawerDemo />
-        <button
+        <DrawerDemo handleRun={handleRun} />
+        <DrawerDemosub handlesubmit={handlesubmit} />
+        {/* <button
           className="w-24"
           type="button"
           onClick={handleRun}
@@ -169,11 +246,11 @@ const LanguageSelector = ({
           disabled={loading || !selectedLanguage}
         >
           Run
-        </button>
-        <button
+        </button> */}
+        {/* <button
           className="w-24"
           type="button"
-          onClick={() => console.log("Submit clicked")}
+          onClick={() => handlesubmit()}
           style={{
             padding: "8px 16px",
             borderRadius: "4px",
@@ -186,7 +263,7 @@ const LanguageSelector = ({
           disabled={!selectedLanguage}
         >
           Submit
-        </button>
+        </button> */}
       </div>
     </div>
   );

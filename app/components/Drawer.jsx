@@ -1,5 +1,5 @@
 "use client";
-
+import { RiArchiveDrawerFill } from "react-icons/ri";
 import * as React from "react";
 import {
   Drawer,
@@ -11,7 +11,7 @@ import {
 } from "@/app/components/ui/drawer";
 import useResponseStore from "../Zustand/runresponse";
 
-export function DrawerDemo() {
+export function DrawerDemo({ handleRun }) {
   const { response, loading } = useResponseStore();
   const [selectedCaseIndex, setSelectedCaseIndex] = React.useState(null);
 
@@ -50,22 +50,48 @@ export function DrawerDemo() {
     const actual = response?.code_answer?.[index] || "";
     return { expected, actual };
   };
-
+  const isfunctionthere = () => {
+    if (typeof handleRun === "function") {
+      return true;
+    } else {
+      return false;
+    }
+  };
   return (
     <Drawer>
       <DrawerTrigger asChild>
-        <button
-          style={{
-            padding: "10px 20px",
-            backgroundColor: "#007BFF",
-            color: "white",
-            border: "none",
-            borderRadius: "4px",
-            cursor: "pointer",
-          }}
-        >
-          Open Drawer
-        </button>
+        {isfunctionthere() ? (
+          <button
+            onClick={() => {
+              if (typeof handleRun === "function") {
+                handleRun();
+              }
+            }}
+            style={{
+              padding: "10px 20px",
+              backgroundColor: "#007BFF",
+              color: "white",
+              border: "none",
+              borderRadius: "4px",
+              cursor: "pointer",
+            }}
+          >
+            Run
+          </button>
+        ) : (
+          <button
+            style={{
+              padding: "10px 20px",
+              backgroundColor: "black",
+              color: "white",
+              border: "none",
+              borderRadius: "4px",
+              cursor: "pointer",
+            }}
+          >
+            R<RiArchiveDrawerFill />
+          </button>
+        )}
       </DrawerTrigger>
       <DrawerContent
         style={{
@@ -103,8 +129,13 @@ export function DrawerDemo() {
           <h2>Submission Details</h2>
 
           {loading ? (
-            <div>
-              <p>Loading...</p>
+            <div className="flex items-center justify-center gap-28">
+              <img
+                className="items-center h-80 w-80"
+                src="/assets/jump.gif" // Path to your downloaded GIF
+                alt="No response available"
+              />
+              <p className="text-3xl font-semibold">Loading ...</p>
             </div>
           ) : response ? (
             <>
@@ -148,7 +179,7 @@ export function DrawerDemo() {
                 <div style={{ marginBottom: "20px" }}>
                   <h4>Actual Code Answer</h4>
                   <ul>
-                    {response.code_answer.map((item, index) => (
+                    {response?.code_answer.map((item, index) => (
                       <li key={index}>{item}</li>
                     ))}
                   </ul>
@@ -219,7 +250,13 @@ export function DrawerDemo() {
               )}
             </>
           ) : (
-            <div style={{ color: "#ccc" }}>No response available.</div>
+            <div style={{ color: "#ccc" }}>
+              <img
+                src="/assets/cry.gif" // Path to your downloaded GIF
+                alt="Loading"
+              />
+              <p className="text-lg">No response</p>
+            </div>
           )}
         </div>
       </DrawerContent>
