@@ -1,12 +1,14 @@
 import React, { useRef, useState, useEffect } from "react";
 import { Editor } from "@monaco-editor/react";
-
 import LanguageSelector from "./LanguageSelector";
 
 const CodeEditor = ({ codeSnippets, slug, exampleTestcaseList, id }) => {
   const editorRef = useRef();
-  const [value, setValue] = useState("ewfew");
-  const [language, setLanguage] = useState("javascript");
+  const [value, setValue] = useState("");
+  const [language, setLanguage] = useState(() => {
+    // Retrieve language from local storage or default to JavaScript
+    return localStorage.getItem("preferredLanguage") || "javascript";
+  });
 
   const CODE_SNIPPETS = {
     javascript: `\nfunction greet(name) {\n\tconsole.log("Hello, " + name + "!");\n}\n\ngreet("Alex");\n`,
@@ -22,24 +24,22 @@ const CodeEditor = ({ codeSnippets, slug, exampleTestcaseList, id }) => {
     python3: `print("Hello World in Python 3")\n`,
   };
 
-  // Populate CODE_SNIPPETS with provided code snippets
-  codeSnippets.forEach((snippet) => {
-    // Handle special cases for C++ and C#
-    let lang = snippet.language.toLowerCase();
-    if (lang == "c++") {
-      CODE_SNIPPETS["cpp"] = snippet.code; // Correctly assign the code to the 'c++' key
-    } else if (lang == "c#") {
-      CODE_SNIPPETS["csharp"] = snippet.code; // Correctly assign the code to the 'c#' key
-    }
-    if (CODE_SNIPPETS[lang] !== undefined) {
-      CODE_SNIPPETS[lang] = snippet.code; // For other languages, update normally
-    }
-  });
-
+  // Update code snippets with provided data
   useEffect(() => {
-    // Set the initial code for the selected language
-    setValue(CODE_SNIPPETS[language] || ""); // Provide a fallback if the language is not found
-  }, [language]);
+    const updatedSnippets = { ...CODE_SNIPPETS };
+    codeSnippets.forEach((snippet) => {
+      const lang = snippet.language.toLowerCase();
+      if (lang === "c++") {
+        updatedSnippets.cpp = snippet.code;
+      } else if (lang === "c#") {
+        updatedSnippets.csharp = snippet.code;
+      } else if (updatedSnippets[lang] !== undefined) {
+        updatedSnippets[lang] = snippet.code;
+      }
+    });
+    // Update the value if the current language has changed snippets
+    setValue(updatedSnippets[language] || "");
+  }, [codeSnippets, language]);
 
   const onMount = (editor) => {
     editorRef.current = editor;
@@ -48,7 +48,9 @@ const CodeEditor = ({ codeSnippets, slug, exampleTestcaseList, id }) => {
 
   const handleLanguageChange = (newLanguage) => {
     setLanguage(newLanguage);
-    setValue(CODE_SNIPPETS[newLanguage] || ""); // Provide a fallback if the language is not found
+    setValue(CODE_SNIPPETS[newLanguage] || "");
+    // Save the selected language to local storage
+    localStorage.setItem("preferredLanguage", newLanguage);
   };
 
   return (
@@ -63,18 +65,16 @@ const CodeEditor = ({ codeSnippets, slug, exampleTestcaseList, id }) => {
       />
       <Editor
         options={{
-          minimap: {
-            enabled: false,
-          },
+          minimap: { enabled: false },
           fontSize: 18,
         }}
         height="100%"
         theme="vs-dark"
         language={language}
-        defaultValue={CODE_SNIPPETS[language] || ""} // Ensure defaultValue is valid
+        defaultValue={CODE_SNIPPETS[language] || ""}
         onMount={onMount}
         value={value}
-        onChange={(value) => setValue(value)}
+        onChange={(val) => setValue(val)}
       />
     </div>
   );

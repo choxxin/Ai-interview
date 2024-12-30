@@ -2,6 +2,8 @@ import { DrawerDemo } from "@/app/components/Drawer";
 import React, { useState, useEffect } from "react";
 import useResponseStore from "../Zustand/runresponse";
 import useSubmissionStore from "../Zustand/submitresponse";
+import { useToast } from "@/app/hook/use-toast";
+
 import { DrawerDemosub } from "./Drawersub";
 const LanguageSelector = ({
   selectedLanguage,
@@ -11,6 +13,7 @@ const LanguageSelector = ({
   value,
   id,
 }) => {
+  const { toast } = useToast();
   const languages = [
     { label: "JavaScript", value: "javascript" },
     { label: "TypeScript", value: "typescript" },
@@ -64,11 +67,18 @@ const LanguageSelector = ({
       if (result?.submission_id) {
         await pollSubmissionStatussubmit(result.submission_id);
       } else {
-        //To makes sure that the user is authenticated //next feature
-        console.error("Interpret ID not found in response.");
+        toast({
+          title: "Seems like you are not authenticated",
+          description:
+            "Please update your X-CSRF-Token and cookies, then refresh the page.",
+        });
       }
       console.log("Submit result:", result);
     } catch (error) {
+      toast({
+        title: { error: error.message },
+        description: "Error while submitting the code",
+      });
       console.error("Failed to submit the code:", error);
     } finally {
       setLoading(false);
@@ -100,11 +110,17 @@ const LanguageSelector = ({
       if (result?.interpret_id) {
         await pollSubmissionStatusrun(result.interpret_id);
       } else {
-        //To makes sure that the user is authenticated //next feature
-        console.error("Interpret ID not found in response.");
+        toast({
+          title: "Seems like you are not authenticated",
+          description:
+            "Please update your X-CSRF-Token and cookies, then refresh the page.",
+        });
       }
     } catch (error) {
-      console.error("Failed to run the code:", error);
+      toast({
+        title: { error: error.message },
+        description: "Error while running the code",
+      });
     }
   };
 

@@ -7,7 +7,7 @@ import QuestionPanel from "@/app/components/QuestionPanel";
 import CodeEditor from "@/app/components/CodeEditor";
 import Timer from "@/app/components/Timer";
 import { FaKey } from "react-icons/fa6";
-import CsrfCookieForm from "@/app/components/tokendropdown";
+import CsrfCookieForm from "@/app/components/CsrfCookieForm";
 import { DrawerDemo } from "@/app/components/Drawer";
 import { DrawerDemosub } from "@/app/components/Drawersub";
 
@@ -35,6 +35,10 @@ const CodeEditorWithQuestion = () => {
                 <h2 className="text-2xl font-semibold">
                   Failed to load question data.
                 </h2>
+                <p className="mt-4 text-sm text-gray-500">
+                  Sometimes this can happen , refresh the page or try again
+                  after some time
+                </p>
               </div>
             );
           const data = await response.json();
