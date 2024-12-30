@@ -1,8 +1,8 @@
 "use client";
-import Image from "next/image";
-
-import CodeEditorWithQuestion from "./Pages/codeeditorpanel/page";
+import { redirect } from "next/navigation";
 
 export default function Home() {
-  return <CodeEditorWithQuestion />;
+  // Redirect to /Pages/landing
+  redirect("/Pages/landing");
+  return null; // This ensures no content is rendered here
 }

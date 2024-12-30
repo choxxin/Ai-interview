@@ -4,6 +4,7 @@ import { useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
 import Split from "react-split";
 import QuestionPanel from "@/app/components/QuestionPanel";
+import { SignInButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 import CodeEditor from "@/app/components/CodeEditor";
 import Timer from "@/app/components/Timer";
 import { FaKey } from "react-icons/fa6";
@@ -71,10 +72,14 @@ const CodeEditorWithQuestion = () => {
 
   if (!questionData)
     return (
-      <div className="flex items-center justify-center h-screen bg-gray-900 text-gray-200">
+      <div className="flex flex-col items-center justify-center h-screen bg-gray-900 text-gray-200">
         <h2 className="text-2xl font-semibold">
           Failed to load question data.
         </h2>
+        <p className="mt-4 text-sm text-gray-500">
+          Sometimes this can happen , refresh the page or try again after some
+          time
+        </p>
       </div>
     );
 
@@ -91,7 +96,7 @@ const CodeEditorWithQuestion = () => {
         }}
       >
         <div className="flex items-center space-x-4">
-          <a className="text-xl font-semibold text-white">daisyUI</a>
+          <a className="text-xl font-semibold text-white">MockMate</a>
           <details className="dropdown">
             <summary
               className="btn btn-ghost"
@@ -122,38 +127,13 @@ const CodeEditorWithQuestion = () => {
           <Timer />
 
           {/* Avatar and Dropdown */}
-          <div className="dropdown dropdown-end">
-            <div
-              tabIndex={0}
-              role="button"
-              className="btn btn-ghost btn-circle avatar"
-              aria-label="User Menu"
-            >
-              <div className="w-10 rounded-full overflow-hidden border border-gray-500">
-                <img
-                  alt="User Avatar"
-                  src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
-                />
-              </div>
-            </div>
-            <ul
-              tabIndex={0}
-              className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow"
-              style={{ backgroundColor: "#FFFFFF" }}
-            >
-              <li>
-                <a className="justify-between">
-                  Profile
-                  <span className="badge bg-blue-500 text-white">New</span>
-                </a>
-              </li>
-              <li>
-                <a>Settings</a>
-              </li>
-              <li>
-                <a>Logout</a>
-              </li>
-            </ul>
+          <div>
+            <SignedOut>
+              <SignInButton className="btn btn-primary w-10" />
+            </SignedOut>
+            <SignedIn>
+              <UserButton />
+            </SignedIn>
           </div>
         </div>
       </div>
