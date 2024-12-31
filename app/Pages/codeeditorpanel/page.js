@@ -11,7 +11,7 @@ import { FaKey } from "react-icons/fa6";
 import CsrfCookieForm from "@/app/components/CsrfCookieForm";
 import { DrawerDemo } from "@/app/components/Drawer";
 import { DrawerDemosub } from "@/app/components/Drawersub";
-
+import { AlertDialogDemo } from "@/app/components/Alertdial";
 const CodeEditorWithQuestion = () => {
   const searchParams = useSearchParams();
   const [questionData, setQuestionData] = useState(null);
@@ -122,6 +122,7 @@ const CodeEditorWithQuestion = () => {
         </div>
 
         <div className="flex items-center space-x-4">
+          <AlertDialogDemo response={questionData} />
           <DrawerDemo />
           <DrawerDemosub />
           <Timer />

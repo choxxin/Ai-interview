@@ -2,7 +2,13 @@
 import React, { useState, useEffect } from "react";
 import { FaMoon, FaSun } from "react-icons/fa";
 import { useRouter } from "next/navigation";
-import { SignInButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
+import {
+  SignInButton,
+  SignUpButton,
+  SignedIn,
+  SignedOut,
+  UserButton,
+} from "@clerk/nextjs";
 import { FaKey } from "react-icons/fa6";
 const LandingPage = () => {
   const [darkMode, setDarkMode] = useState(true);
@@ -118,6 +124,7 @@ const LandingPage = () => {
 
         <div className="flex items-center space-x-4">
           <SignedOut>
+            <SignUpButton className="btn btn-secondary" />
             <SignInButton className="btn btn-primary" />
           </SignedOut>
           <SignedIn>
@@ -217,6 +224,9 @@ const LandingPage = () => {
             ></video>
           </div>
           <div>
+            <p className="text-sm  mb-2">
+              ** Key will be available after authentication
+            </p>
             <p className="mb-10 font-semibold">
               Where to paste your cookie and x-csrf token
             </p>

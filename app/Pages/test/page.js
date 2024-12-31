@@ -13,7 +13,10 @@ import { DrawerDemosub } from "../../components/Drawersub";
 import Stopwatch from "../../components/Timertest";
 import { toast } from "../../../hooks/use-toast";
 
+import useAistore from "@/app/Zustand/airesponse";
+
 const CodeEditorWithQuestion = () => {
+  const { setAi, setAiLoading } = useAistore();
   const searchParams = useSearchParams();
   const [questions, setQuestions] = useState([]); // Holds loaded questions
   const [currentQuestion, setCurrentQuestion] = useState(null);
@@ -2248,6 +2251,36 @@ const CodeEditorWithQuestion = () => {
     );
   }
 
+  const Ai = async () => {
+    try {
+      setAiLoading(true);
+      const pl = localStorage.getItem("preferredLanguage") || "javascript";
+      const prompt = `
+        Based on the following Question and snippets provide the solution in the  
+        Language: ${pl}
+        Question: ${currentQuestion.stringify()}
+      `;
+
+      const genAI = new GoogleGenerativeAI(
+        "AIzaSyDi4MQ5UAxYq57fqemS0C1dqiUFDOMGZRE"
+      );
+      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+      const result = await model.generateContent(prompt);
+
+      const aiResponse = result.response.text();
+
+      // Set response text for typewriter effect
+      setResponseText(aiResponse);
+      setTypingResponse(""); // Reset typing response for new animation
+      typeResponse(aiResponse);
+    } catch (error) {
+      console.error("Error contacting Gemini API:", error);
+      alert("Failed to get a response from the Gemini API.");
+    } finally {
+      setAiLoading(false);
+    }
+  };
   return (
     <div>
       <div
