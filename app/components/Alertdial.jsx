@@ -16,7 +16,7 @@ const { GoogleGenerativeAI } = require("@google/generative-ai");
 
 export function AlertDialogDemo(response) {
   const { Airesponse, Ailoading, setAi, setAiLoading } = useAistore();
-  const [aiAns, setaiAns] = useState("meow");
+  const [aiAns, setaiAns] = useState("Loading...");
   const { toast } = useToast();
 
   const handleCopy = () => {
@@ -29,7 +29,7 @@ export function AlertDialogDemo(response) {
   const Ai = async () => {
     try {
       setAiLoading(true); // Indicate that AI processing has started
-      setaiAns("meow");
+      setaiAns("Loading...");
       const pl = localStorage.getItem("preferredLanguage") || "javascript";
 
       const responseString = JSON.stringify(response, null, 2);
@@ -96,7 +96,7 @@ export function AlertDialogDemo(response) {
             AI-Generated Code
           </DialogTitle>
         </DialogHeader>
-        <DialogDescription className="text-gray-300">
+        <DialogDescription className="text-gray-300 max-w-[980px]">
           {Ailoading ? (
             <p>Fetching response...</p>
           ) : (

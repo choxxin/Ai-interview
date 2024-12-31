@@ -12,7 +12,7 @@ import { DrawerDemo } from "../../components/Drawer";
 import { DrawerDemosub } from "../../components/Drawersub";
 import Stopwatch from "../../components/Timertest";
 import { toast } from "../../../hooks/use-toast";
-
+import { AlertDialogDemo } from "../../components/Alertdial";
 import useAistore from "@/app/Zustand/airesponse";
 
 const CodeEditorWithQuestion = () => {
@@ -2320,6 +2320,7 @@ const CodeEditorWithQuestion = () => {
         </div>
 
         <div className="flex items-center space-x-4">
+          <AlertDialogDemo response={currentQuestion} />
           <button
             className="btn btn-sm bg-blue-500 text-white rounded"
             onClick={() => setCurrentQuestion(questions[0])}

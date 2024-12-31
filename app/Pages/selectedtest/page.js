@@ -10,24 +10,36 @@ import { SignInButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 import dataset from "@/app/components/const";
 import Stopwatch from "@/app/components/Timertest";
 import { FaKey } from "react-icons/fa6";
+import useResultStore from "@/app/Zustand/resultresponse";
 import CsrfCookieForm from "@/app/components/CsrfCookieForm";
 import { DrawerDemo } from "@/app/components/Drawer";
 import { DrawerDemosub } from "@/app/components/Drawersub";
+import { AlertDialogDemo } from "../../components/Alertdial";
+import { useRouter } from "next/navigation";
 const CodeEditorWithQuestion = () => {
   const searchParams = useSearchParams();
   const difficultyMap = { easy: 1, medium: 2, hard: 3 };
   const [questions, setQuestions] = useState([]); // Holds loaded questions
-  const [currentQuestion, setCurrentQuestion] = useState(null);
+  const [currentQuestion, setCurrentQuestion] = useState();
   const [isLoading, setIsLoading] = useState(true);
   const [difficultySequence, setDifficultySequence] = useState(null); // Initially null
 
   const totalQuestions = 3; // Total number of questions to load
+  const { Result, hasId, clearResults } = useResultStore();
 
+  const isAnswered1 = questions[0] ? hasId(questions[0].id) : false;
+  const isAnswered2 = questions[1] ? hasId(questions[1].id) : false;
+  const isAnswered3 = questions[2] ? hasId(questions[2].id) : false;
+  const router = useRouter(); // Hook for navigation
+  const handleFinish = () => {
+    router.push("/Pages/thank"); // Navigate to the Thank You page
+  };
   // Parse query parameters for difficulty sequence
   useEffect(() => {
     const selections = searchParams.get("selections");
     if (selections) {
       try {
+        clearResults();
         const parsedSelections = JSON.parse(selections);
         setDifficultySequence(parsedSelections);
         // console.log("Custom difficulty sequence:", parsedSelections);
@@ -218,19 +230,35 @@ const CodeEditorWithQuestion = () => {
 
         <div className="flex items-center space-x-4">
           <button
-            className="btn btn-sm bg-blue-500 text-white rounded"
+            className="btn btn-sm text-white rounded bg-black hover:bg-gray-700 transition px-4 py-2"
+            onClick={handleFinish}
+          >
+            Finish
+          </button>
+          <button className={`btn btn-sm text-white rounded bg-black`}>
+            {Result.length}/3
+          </button>
+          <AlertDialogDemo response={currentQuestion} />
+          <button
+            className={`btn btn-sm text-white rounded ${
+              isAnswered1 ? "bg-green-500" : "bg-blue-500"
+            }`}
             onClick={() => setCurrentQuestion(questions[0])}
           >
             Q1
           </button>
           <button
-            className="btn btn-sm bg-green-500 text-white rounded"
+            className={`btn btn-sm text-white rounded ${
+              isAnswered2 ? "bg-green-500" : "bg-blue-500"
+            }`}
             onClick={() => setCurrentQuestion(questions[1])}
           >
             Q2
           </button>
           <button
-            className="btn btn-sm bg-purple-500 text-white rounded"
+            className={`btn btn-sm text-white rounded ${
+              isAnswered3 ? "bg-green-500" : "bg-blue-500"
+            }`}
             onClick={() => setCurrentQuestion(questions[2])}
           >
             Q3

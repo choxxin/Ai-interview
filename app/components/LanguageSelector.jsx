@@ -5,6 +5,7 @@ import useSubmissionStore from "../Zustand/submitresponse";
 import { useToast } from "@/hooks/use-toast";
 
 import { DrawerDemosub } from "./Drawersub";
+import useResultStore from "../Zustand/resultresponse";
 const LanguageSelector = ({
   selectedLanguage,
   onSelectLanguage,
@@ -14,6 +15,7 @@ const LanguageSelector = ({
   id,
 }) => {
   const { toast } = useToast();
+
   const languages = [
     { label: "JavaScript", value: "javascript" },
     { label: "TypeScript", value: "typescript" },
@@ -29,6 +31,7 @@ const LanguageSelector = ({
   const [xcsrftoken, setXcsrftoken] = useState("");
   const [cookie, setCookie] = useState("");
   const { setLoadingsubmit, setSubmit } = useSubmissionStore();
+  const { Result, addId, removeId, clearResults, hasId } = useResultStore();
   useEffect(() => {
     const storedXcsrftoken = localStorage.getItem("X-CSRF-Token");
     const storedCookie = localStorage.getItem("Cookie");
@@ -190,6 +193,12 @@ const LanguageSelector = ({
         if (statusData.state === "SUCCESS") {
           console.log("Submission succeeded:", statusData);
           setSubmit(statusData);
+
+          if (statusData.status_msg === "Accepted") {
+            if (!hasId(id)) addId(id);
+            console.log("Result1", Result);
+          }
+          console.log("Result2", Result);
           setLoadingsubmit(false);
         } else if (statusData.state === "PENDING") {
           requestCount++;
