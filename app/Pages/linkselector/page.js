@@ -11,29 +11,6 @@ const LeetCodePage = () => {
     setQuestionLink(e.target.value);
   };
 
-  // const handleSubmit = async () => {
-  //   try {
-  //     const response = await fetch("http://localhost:3000/api/scrap", {
-  //       method: "POST",
-  //       headers: { "Content-Type": "application/json" },
-  //       body: JSON.stringify({ url: questionLink }),
-  //     });
-
-  //     if (response.ok) {
-  //       const data = await response.json(); // Get the response data
-  //       // Pass the data to the next page
-  //       router.push({
-  //         pathname: "/codeeditorpanel",
-  //         query: { data: JSON.stringify(data) }, // Ensure 'data' is correct
-  //       });
-  //     } else {
-  //       console.error("Failed to process the LeetCode question.");
-  //     }
-  //   } catch (error) {
-  //     console.error("Error processing LeetCode question:", error);
-  //   }
-  // };
-
   return (
     <div className="flex flex-col items-center justify-center h-screen w-full bg-gray-900 text-gray-200">
       {/* LeetCode Logo */}

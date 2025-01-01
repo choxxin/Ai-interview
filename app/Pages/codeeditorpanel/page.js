@@ -26,13 +26,16 @@ const CodeEditorWithQuestion = () => {
       const fetchQuestionData = async () => {
         setIsLoading(true);
         try {
-          const response = await fetch("http://localhost:3000/api/scrap", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ url: queryLink }),
-          });
+          const response = await fetch(
+            "https://mockmate-five.vercel.app/api/scrap",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ url: queryLink }),
+            }
+          );
 
           if (!response.ok) {
             throw new Error("Failed to load question data.");

@@ -2185,15 +2185,18 @@ const CodeEditorWithQuestion = () => {
   }, [isLoading]);
   const fetchQuestion = async (slug) => {
     try {
-      const response = await fetch("http://localhost:3000/api/scrap", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          url: `https://leetcode.com/problems/${slug}/description`,
-        }),
-      });
+      const response = await fetch(
+        "https://mockmate-five.vercel.app/api/scrap",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            url: `https://leetcode.com/problems/${slug}/description`,
+          }),
+        }
+      );
 
       if (!response.ok) {
         // toast({

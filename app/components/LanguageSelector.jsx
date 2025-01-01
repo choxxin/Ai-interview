@@ -60,11 +60,14 @@ const LanguageSelector = ({
         cookie,
       };
 
-      const response = await fetch("http://localhost:3000/api/leetcodesubmit", {
-        method: "POST",
-        headers,
-        body: JSON.stringify(body),
-      });
+      const response = await fetch(
+        "https://mockmate-five.vercel.app/api/leetcodesubmit",
+        {
+          method: "POST",
+          headers,
+          body: JSON.stringify(body),
+        }
+      );
 
       const result = await response.json();
       if (result?.submission_id) {
@@ -101,11 +104,14 @@ const LanguageSelector = ({
         cookie,
       };
 
-      const response = await fetch("http://localhost:3000/api/leetcoderun", {
-        method: "POST",
-        headers,
-        body: JSON.stringify(body),
-      });
+      const response = await fetch(
+        "https://mockmate-five.vercel.app//api/leetcoderun",
+        {
+          method: "POST",
+          headers,
+          body: JSON.stringify(body),
+        }
+      );
 
       const result = await response.json();
       console.log("Run result:", result);
@@ -139,11 +145,14 @@ const LanguageSelector = ({
       }
 
       try {
-        const response = await fetch("http://localhost:3000/api/runcheck", {
-          method: "POST",
-          headers,
-          body: JSON.stringify({ interpret_id, slug }),
-        });
+        const response = await fetch(
+          "https://mockmate-five.vercel.app/api/runcheck",
+          {
+            method: "POST",
+            headers,
+            body: JSON.stringify({ interpret_id, slug }),
+          }
+        );
 
         const statusData = await response.json();
         console.log("Submission status:", statusData);
@@ -181,11 +190,14 @@ const LanguageSelector = ({
       }
 
       try {
-        const response = await fetch("http://localhost:3000/api/submitcheck", {
-          method: "POST",
-          headers,
-          body: JSON.stringify({ submission_id, slug, xcsrftoken, cookie }),
-        });
+        const response = await fetch(
+          "https://mockmate-five.vercel.app/api/submitcheck",
+          {
+            method: "POST",
+            headers,
+            body: JSON.stringify({ submission_id, slug, xcsrftoken, cookie }),
+          }
+        );
 
         const statusData = await response.json();
         console.log("Submission status:", statusData);
