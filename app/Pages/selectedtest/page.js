@@ -1,6 +1,5 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
 import Split from "react-split";
 import QuestionPanel from "@/app/components/QuestionPanel";
@@ -17,7 +16,6 @@ import { DrawerDemosub } from "@/app/components/Drawersub";
 import { AlertDialogDemo } from "../../components/Alertdial";
 import { useRouter } from "next/navigation";
 const CodeEditorWithQuestion = () => {
-  const searchParams = useSearchParams();
   const difficultyMap = { easy: 1, medium: 2, hard: 3 };
   const [questions, setQuestions] = useState([]); // Holds loaded questions
   const [currentQuestion, setCurrentQuestion] = useState();
@@ -36,7 +34,9 @@ const CodeEditorWithQuestion = () => {
   };
   // Parse query parameters for difficulty sequence
   useEffect(() => {
-    const selections = searchParams.get("selections");
+    const params = new URLSearchParams(window.location.search);
+    const selections = params.get("selections");
+
     if (selections) {
       try {
         clearResults();
@@ -54,7 +54,7 @@ const CodeEditorWithQuestion = () => {
     } else {
       setDifficultySequence(["easy", "easy", "medium"]); // Default sequence
     }
-  }, [searchParams]);
+  }, []);
 
   useEffect(() => {
     let timeout;
