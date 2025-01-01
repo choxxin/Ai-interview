@@ -2,7 +2,7 @@ import React, { useRef, useState, useEffect } from "react";
 import { Editor } from "@monaco-editor/react";
 import LanguageSelector from "./LanguageSelector";
 
-export const CodeEditor = ({ codeSnippets, slug, exampleTestcaseList, id }) => {
+const CodeEditor = ({ codeSnippets, slug, exampleTestcaseList, id }) => {
   const editorRef = useRef();
   const [value, setValue] = useState("");
   const [language, setLanguage] = useState(() => {
@@ -79,3 +79,5 @@ export const CodeEditor = ({ codeSnippets, slug, exampleTestcaseList, id }) => {
     </div>
   );
 };
+
+export default CodeEditor;
