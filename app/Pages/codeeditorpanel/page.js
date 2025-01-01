@@ -27,7 +27,7 @@ const CodeEditorWithQuestion = () => {
         setIsLoading(true);
         try {
           const response = await fetch(
-            "https://mockmate-five.vercel.app/api/scrap",
+            `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/scrap`,
             {
               method: "POST",
               headers: {

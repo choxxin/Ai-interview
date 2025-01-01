@@ -61,7 +61,7 @@ const LanguageSelector = ({
       };
 
       const response = await fetch(
-        "https://mockmate-five.vercel.app/api/leetcodesubmit",
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/leetcodesubmit`,
         {
           method: "POST",
           headers,
@@ -105,7 +105,7 @@ const LanguageSelector = ({
       };
 
       const response = await fetch(
-        "https://mockmate-five.vercel.app//api/leetcoderun",
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/leetcoderun`,
         {
           method: "POST",
           headers,
@@ -146,7 +146,7 @@ const LanguageSelector = ({
 
       try {
         const response = await fetch(
-          "https://mockmate-five.vercel.app/api/runcheck",
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/runcheck`,
           {
             method: "POST",
             headers,
@@ -191,7 +191,7 @@ const LanguageSelector = ({
 
       try {
         const response = await fetch(
-          "https://mockmate-five.vercel.app/api/submitcheck",
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/submitcheck`,
           {
             method: "POST",
             headers,
