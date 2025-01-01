@@ -24,7 +24,7 @@ const CodeEditorWithQuestion = () => {
 
   const totalQuestions = 3; // Total number of questions to load
   const { Result, hasId, clearResults } = useResultStore();
-  const Cookie = localStorage.getItem("Cookie");
+  const [Cookie, setCookie] = useState(null);
   const isAnswered1 = questions[0] ? hasId(questions[0].id) : false;
   const isAnswered2 = questions[1] ? hasId(questions[1].id) : false;
   const isAnswered3 = questions[2] ? hasId(questions[2].id) : false;
@@ -32,7 +32,11 @@ const CodeEditorWithQuestion = () => {
   const handleFinish = () => {
     router.push("/Pages/thank"); // Navigate to the Thank You page
   };
-  // Parse query parameters for difficulty sequence
+  useEffect(() => {
+    const savedCookie = localStorage.getItem("Cookie");
+    setCookie(savedCookie);
+  }, []);
+
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const selections = params.get("selections");
