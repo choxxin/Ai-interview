@@ -1,6 +1,5 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
 import Split from "react-split";
 import QuestionPanel from "../../components/QuestionPanel";
@@ -19,7 +18,7 @@ import { useRouter } from "next/navigation";
 
 const CodeEditorWithQuestion = () => {
   const { setAi, setAiLoading } = useAistore();
-  const searchParams = useSearchParams();
+
   const [questions, setQuestions] = useState([]); // Holds loaded questions
   const [currentQuestion, setCurrentQuestion] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
