@@ -7,6 +7,7 @@ import QuestionPanel from "../../components/QuestionPanel";
 import CodeEditor from "../../components/CodeEditor";
 import { SignInButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 import { FaKey } from "react-icons/fa6";
+import useResultStore from "@/app/Zustand/resultresponse";
 import CsrfCookieForm from "../../components/CsrfCookieForm";
 import { DrawerDemo } from "../../components/Drawer";
 import { DrawerDemosub } from "../../components/Drawersub";
@@ -14,6 +15,7 @@ import Stopwatch from "../../components/Timertest";
 import { toast } from "../../../hooks/use-toast";
 import { AlertDialogDemo } from "../../components/Alertdial";
 import useAistore from "@/app/Zustand/airesponse";
+import { useRouter } from "next/navigation";
 
 const CodeEditorWithQuestion = () => {
   const { setAi, setAiLoading } = useAistore();
@@ -2154,8 +2156,16 @@ const CodeEditorWithQuestion = () => {
     "Minimum-Time-to-Make-Array-Sum-At-Most-x",
     "Maximum-Elegance-of-a-K-Length-Subsequence",
   ];
-  const totalQuestions = 3; // Total number of questions to load
+  const { Result, hasId, clearResults } = useResultStore();
 
+  const totalQuestions = 3; // Total number of questions to load
+  const isAnswered1 = questions[0] ? hasId(questions[0].id) : false;
+  const isAnswered2 = questions[1] ? hasId(questions[1].id) : false;
+  const isAnswered3 = questions[2] ? hasId(questions[2].id) : false;
+  const router = useRouter(); // Hook for navigation
+  const handleFinish = () => {
+    router.push("/Pages/thank"); // Navigate to the Thank You page
+  };
   useEffect(() => {
     let timeout;
 
@@ -2224,6 +2234,7 @@ const CodeEditorWithQuestion = () => {
 
   useEffect(() => {
     loadQuestions();
+    clearResults();
   }, []);
 
   if (isLoading) {
@@ -2251,36 +2262,6 @@ const CodeEditorWithQuestion = () => {
     );
   }
 
-  const Ai = async () => {
-    try {
-      setAiLoading(true);
-      const pl = localStorage.getItem("preferredLanguage") || "javascript";
-      const prompt = `
-        Based on the following Question and snippets provide the solution in the  
-        Language: ${pl}
-        Question: ${currentQuestion.stringify()}
-      `;
-
-      const genAI = new GoogleGenerativeAI(
-        "AIzaSyDi4MQ5UAxYq57fqemS0C1dqiUFDOMGZRE"
-      );
-      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-
-      const result = await model.generateContent(prompt);
-
-      const aiResponse = result.response.text();
-
-      // Set response text for typewriter effect
-      setResponseText(aiResponse);
-      setTypingResponse(""); // Reset typing response for new animation
-      typeResponse(aiResponse);
-    } catch (error) {
-      console.error("Error contacting Gemini API:", error);
-      alert("Failed to get a response from the Gemini API.");
-    } finally {
-      setAiLoading(false);
-    }
-  };
   return (
     <div>
       <div
@@ -2320,21 +2301,36 @@ const CodeEditorWithQuestion = () => {
         </div>
 
         <div className="flex items-center space-x-4">
+          <button
+            className="btn btn-sm text-white rounded bg-black hover:bg-gray-700 transition px-4 py-2"
+            onClick={handleFinish}
+          >
+            Finish
+          </button>
+          <button className={`btn btn-sm text-white rounded bg-black`}>
+            {Result.length}/3
+          </button>
           <AlertDialogDemo response={currentQuestion} />
           <button
-            className="btn btn-sm bg-blue-500 text-white rounded"
+            className={`btn btn-sm text-white rounded ${
+              isAnswered1 ? "bg-green-500" : "bg-blue-500"
+            }`}
             onClick={() => setCurrentQuestion(questions[0])}
           >
             Q1
           </button>
           <button
-            className="btn btn-sm bg-green-500 text-white rounded"
+            className={`btn btn-sm text-white rounded ${
+              isAnswered2 ? "bg-green-500" : "bg-blue-500"
+            }`}
             onClick={() => setCurrentQuestion(questions[1])}
           >
             Q2
           </button>
           <button
-            className="btn btn-sm bg-purple-500 text-white rounded"
+            className={`btn btn-sm text-white rounded ${
+              isAnswered3 ? "bg-green-500" : "bg-blue-500"
+            }`}
             onClick={() => setCurrentQuestion(questions[2])}
           >
             Q3
