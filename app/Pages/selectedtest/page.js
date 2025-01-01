@@ -24,7 +24,7 @@ const CodeEditorWithQuestion = () => {
 
   const totalQuestions = 3; // Total number of questions to load
   const { Result, hasId, clearResults } = useResultStore();
-
+  const Cookie = localStorage.getItem("Cookie");
   const isAnswered1 = questions[0] ? hasId(questions[0].id) : false;
   const isAnswered2 = questions[1] ? hasId(questions[1].id) : false;
   const isAnswered3 = questions[2] ? hasId(questions[2].id) : false;
@@ -87,6 +87,7 @@ const CodeEditorWithQuestion = () => {
           },
           body: JSON.stringify({
             url: `https://leetcode.com/problems/${slug}/description`,
+            Cookie: Cookie,
           }),
         }
       );
