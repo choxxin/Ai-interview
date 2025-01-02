@@ -34,7 +34,9 @@ export async function POST(req) {
     console.log("Response Status:", response.status); // Debug response status
 
     if (!response.ok) {
-      throw new Error("Failed to fetch HTML content from LeetCode");
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
     }
 
     const htmlContent = await response.text();
