@@ -23,6 +23,7 @@ export async function POST(req) {
     const headers = {
       "Sec-CH-UA-Mobile": "?1",
       Cookie: Cookie,
+      "User-Agent": "PostmanRuntime/7.43.0",
     };
 
     // Make the GET request to fetch the HTML content
@@ -34,9 +35,7 @@ export async function POST(req) {
     console.log("Response Status:", response.status); // Debug response status
 
     if (!response.ok) {
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
+      throw new Error(`HTTP error! Status: ${response.status}`);
     }
 
     const htmlContent = await response.text();
