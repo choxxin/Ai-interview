@@ -101,8 +101,15 @@ export async function POST(req) {
     const { url, Cookie } = await req.json();
 
     const browser = await puppeteer.launch({
-      headless: true, // Running in non-headless mode helps bypass some bot detection
-      args: ["--disable-blink-features=AutomationControlled"], // Avoid detection
+      headless: true,
+      executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || undefined, // Ensure it works in Vercel
+      args: [
+        "--no-sandbox",
+        "--disable-setuid-sandbox",
+        "--disable-dev-shm-usage",
+        "--disable-gpu",
+        "--disable-blink-features=AutomationControlled",
+      ],
     });
 
     const page = await browser.newPage();
