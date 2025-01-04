@@ -93,115 +93,99 @@
 //     );
 //   }
 // }
+
 const puppeteer = require("puppeteer");
 const cheerio = require("cheerio");
+
+import puppeteerCore from "puppeteer-core";
+import chromium from "@sparticuz/chromium-min";
 
 export async function POST(req) {
   try {
     const { url, Cookie } = await req.json();
 
-    const browser = await puppeteer.launch({
-      headless: true, // Running in non-headless mode helps bypass some bot detection
-      args: ["--disable-blink-features=AutomationControlled"], // Avoid detection
-    });
+    let browser;
+    if (
+      process.env.NODE_ENV === "production" ||
+      process.env.VERCEL_ENV === "production"
+    ) {
+      const executablePath = await chromium.executablePath();
+      browser = await puppeteerCore.launch({
+        executablePath,
+        args: chromium.args,
+        headless: chromium.headless,
+        defaultViewport: chromium.defaultViewport,
+      });
+    } else {
+      browser = await puppeteer.launch({
+        headless: true,
+        args: ["--no-sandbox", "--disable-setuid-sandbox"],
+      });
+    }
 
     const page = await browser.newPage();
-
-    // Set user agent to mimic a real browser
     await page.setUserAgent(
       "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36"
     );
 
-    // Set headers, including cookies
-    await page.setExtraHTTPHeaders({
-      "Sec-CH-UA-Mobile": "?1",
-      Cookie: Cookie,
-    });
-
-    // Intercept requests to optimize and avoid issues
+    await page.setExtraHTTPHeaders({ Cookie });
     await page.setRequestInterception(true);
     page.on("request", (request) => {
       if (["image", "stylesheet", "font"].includes(request.resourceType())) {
-        request.abort(); // Skip loading unnecessary resources
+        request.abort();
       } else {
         request.continue();
       }
     });
 
-    // Navigate to the URL and wait for the page to load fully
     await page.goto(url, { waitUntil: "networkidle2" });
+    await new Promise((resolve) => setTimeout(resolve, 5000)); // Allow Cloudflare to resolve
 
-    // Wait for the Cloudflare challenge to be resolved, if any
-    await new Promise((resolve) => setTimeout(resolve, 5000)); // 5 seconds delay
-
-    // Get the page content
     const htmlContent = await page.content();
-    console.log("HTML content fetched successfully.");
-
-    // Close the browser
-    await browser.close();
-
-    // Load HTML into Cheerio for parsing
     const $ = cheerio.load(htmlContent);
-
-    // Extract JSON data from the `__NEXT_DATA__` script tag
     const rawData = $("#__NEXT_DATA__").html();
-    if (!rawData) {
-      throw new Error("Failed to locate the `__NEXT_DATA__` JSON in the HTML.");
-    }
+
+    if (!rawData) throw new Error("Failed to locate `__NEXT_DATA__` in HTML.");
 
     const jsonData = JSON.parse(rawData);
-
-    // Locate question details in JSON
     const questionData =
       jsonData?.props?.pageProps?.dehydratedState?.queries.find(
         (query) => query.queryKey[0] === "questionDetail"
       )?.state?.data?.question;
 
-    if (!questionData) {
+    if (!questionData)
       throw new Error("Failed to locate question data in JSON.");
-    }
-
-    // Extract relevant details
-    const codeSnippets = questionData.codeSnippets || [];
-    const description = $('meta[name="description"]').attr("content");
-    const titleSlug = questionData.titleSlug || "No slug found";
-    const exampleTestcaseList = questionData.exampleTestcaseList || [];
 
     const result = {
       title: questionData.title || "No title found",
-      slug: titleSlug,
+      slug: questionData.titleSlug || "No slug found",
       id: questionData.questionId || "n/a",
       stats: questionData.stats || "No stats found",
-      description: description || "No description found",
+      description:
+        $('meta[name="description"]').attr("content") || "No description found",
       difficulty: questionData.difficulty || "No difficulty found",
-      exampleTestcaseList: exampleTestcaseList,
-      codeSnippets: codeSnippets.map((snippet) => ({
-        language: snippet.lang,
-        code: snippet.code,
-      })),
+      exampleTestcaseList: questionData.exampleTestcaseList || [],
+      codeSnippets:
+        questionData.codeSnippets?.map((snippet) => ({
+          language: snippet.lang,
+          code: snippet.code,
+        })) || [],
     };
 
-    // Respond with the extracted data
+    await browser.close();
+
     return new Response(JSON.stringify(result, null, 2), {
       status: 200,
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
     });
   } catch (error) {
-    console.error("Error:", error);
+    console.error("Error:", error.message);
     return new Response(
       JSON.stringify({
         message: "Error processing the request.",
         error: error.message,
       }),
-      {
-        status: 500,
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
+      { status: 500, headers: { "Content-Type": "application/json" } }
     );
   }
 }
