@@ -99,19 +99,25 @@ const cheerio = require("cheerio");
 
 import puppeteerCore from "puppeteer-core";
 import chromium from "@sparticuz/chromium-min";
+``;
+export const config = {
+  runtime: "nodejs",
+  maxDuration: 60, // Extend timeout to 60 seconds
+};
 
 export async function POST(req) {
   try {
     const { url, Cookie } = await req.json();
+
+    console.log("Starting Puppeteer process...");
+    const startTime = Date.now();
 
     let browser;
     if (
       process.env.NODE_ENV === "production" ||
       process.env.VERCEL_ENV === "production"
     ) {
-      const executablePath = await chromium.executablePath(
-        "https://github.com/Sparticuz/chromium/releases/download/v131.0.1/chromium-v131.0.1-pack.tar"
-      );
+      const executablePath = await chromium.executablePath();
       browser = await puppeteerCore.launch({
         executablePath,
         args: chromium.args,
@@ -125,7 +131,9 @@ export async function POST(req) {
       });
     }
 
+    console.log("Browser launched:", Date.now() - startTime, "ms");
     const page = await browser.newPage();
+
     await page.setUserAgent(
       "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36"
     );
@@ -141,8 +149,9 @@ export async function POST(req) {
     });
 
     await page.goto(url, { waitUntil: "networkidle2" });
-    await new Promise((resolve) => setTimeout(resolve, 5000)); // Allow Cloudflare to resolve
+    console.log("Page loaded:", Date.now() - startTime, "ms");
 
+    await page.waitForSelector("#__NEXT_DATA__", { timeout: 5000 });
     const htmlContent = await page.content();
     const $ = cheerio.load(htmlContent);
     const rawData = $("#__NEXT_DATA__").html();
@@ -175,6 +184,7 @@ export async function POST(req) {
     };
 
     await browser.close();
+    console.log("Browser closed:", Date.now() - startTime, "ms");
 
     return new Response(JSON.stringify(result, null, 2), {
       status: 200,
