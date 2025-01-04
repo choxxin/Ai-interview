@@ -147,10 +147,18 @@ export async function POST(req) {
       }
     });
 
-    await page.goto(url, { waitUntil: "networkidle2" });
+    // Increase navigation timeout and wait until the network is idle
+    await page.goto(url, { waitUntil: "networkidle2", timeout: 60000 }); // 60 seconds
+
     console.log("Page loaded:", Date.now() - startTime, "ms");
 
-    await page.waitForSelector("#__NEXT_DATA__", { timeout: 5000 });
+    // Ensure the selector exists before proceeding
+    const dataExists = await page.$("#__NEXT_DATA__");
+    if (!dataExists) {
+      throw new Error("Selector #__NEXT_DATA__ not found on the page.");
+    }
+
+    await page.waitForSelector("#__NEXT_DATA__", { timeout: 20000 }); // 10 seconds for selector
     const htmlContent = await page.content();
     const $ = cheerio.load(htmlContent);
     const rawData = $("#__NEXT_DATA__").html();
