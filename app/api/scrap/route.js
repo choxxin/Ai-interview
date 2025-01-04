@@ -98,8 +98,9 @@ const puppeteer = require("puppeteer");
 const cheerio = require("cheerio");
 
 import puppeteerCore from "puppeteer-core";
-import chromium from "@sparticuz/chromium-min";
-``;
+
+import chromium from "@sparticuz/chromium";
+
 export const config = {
   runtime: "nodejs",
   maxDuration: 60, // Extend timeout to 60 seconds
@@ -117,9 +118,8 @@ export async function POST(req) {
       process.env.NODE_ENV === "production" ||
       process.env.VERCEL_ENV === "production"
     ) {
-      const executablePath = await chromium.executablePath(
-        "https://github.com/Sparticuz/chromium/releases/download/v131.0.1/chromium-v131.0.1-pack.tar"
-      );
+      const executablePath = await chromium.executablePath();
+
       browser = await puppeteerCore.launch({
         executablePath,
         args: chromium.args,
