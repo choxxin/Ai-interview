@@ -109,7 +109,9 @@ export async function POST(req) {
       process.env.NODE_ENV === "production" ||
       process.env.VERCEL_ENV === "production"
     ) {
-      const executablePath = await chromium.executablePath();
+      const executablePath = await chromium.executablePath(
+        "https://github.com/Sparticuz/chromium/releases/download/v131.0.1/chromium-v131.0.1-pack.tar"
+      );
       browser = await puppeteerCore.launch({
         executablePath,
         args: chromium.args,
