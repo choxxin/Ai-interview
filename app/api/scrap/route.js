@@ -101,10 +101,7 @@ import puppeteerCore from "puppeteer-core";
 
 import chromium from "@sparticuz/chromium";
 
-export const config = {
-  runtime: "nodejs",
-  maxDuration: 60, // Extend timeout to 60 seconds
-};
+export const maxDuration = 60;
 
 export async function POST(req) {
   try {
