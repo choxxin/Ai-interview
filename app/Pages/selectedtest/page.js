@@ -25,6 +25,8 @@ const CodeEditorWithQuestion = () => {
   const totalQuestions = 3; // Total number of questions to load
   const { Result, hasId, clearResults } = useResultStore();
   const [Cookie, setCookie] = useState(null);
+
+  const [Xcsrf, setXcsrf] = useState(null);
   const isAnswered1 = questions[0] ? hasId(questions[0].id) : false;
   const isAnswered2 = questions[1] ? hasId(questions[1].id) : false;
   const isAnswered3 = questions[2] ? hasId(questions[2].id) : false;
@@ -34,6 +36,8 @@ const CodeEditorWithQuestion = () => {
   };
   useEffect(() => {
     const savedCookie = localStorage.getItem("Cookie");
+    const savedXcsrf = localStorage.getItem("X-CSRF-Token");
+    setXcsrf(savedXcsrf);
     setCookie(savedCookie);
   }, []);
 
@@ -106,6 +110,45 @@ const CodeEditorWithQuestion = () => {
       return null;
     }
   };
+
+  // const fetchQuestion = async (slug) => {
+  //   try {
+  //     const response = await fetch(
+  //       `https://leetcode.com/problems/${slug}/description`,
+  //       {
+  //         method: "GET",
+  //         headers: {
+  //           "User-Agent":
+  //             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36 Edg/131.0.0.0",
+  //           Accept:
+  //             "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
+  //           Referer: "http://localhost:3000/",
+  //           "Sec-CH-UA":
+  //             '"Microsoft Edge";v="131", "Chromium";v="131", "Not_A Brand";v="24"',
+  //           "Sec-CH-UA-Mobile": "?0",
+  //           "Sec-CH-UA-Platform": '"Windows"',
+  //           "Sec-Fetch-Site": "same-origin",
+  //           "Sec-Fetch-Mode": "navigate",
+  //           "Sec-Fetch-User": "?1",
+  //           Cookie: Cookie, // Ensure this contains a valid session cookie
+  //         },
+  //       }
+  //     );
+
+  //     if (!response.ok) {
+  //       throw new Error(
+  //         `Failed to fetch question data. Status: ${response.status}`
+  //       );
+  //     }
+
+  //     // Parse response as text (HTML content)
+  //     const html = await response.text();
+  //     return html;
+  //   } catch (error) {
+  //     console.error("Error fetching question data:", error);
+  //     return null;
+  //   }
+  // };
 
   // Load questions after difficultySequence is set
   useEffect(() => {
