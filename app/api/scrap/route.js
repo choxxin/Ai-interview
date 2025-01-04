@@ -101,7 +101,7 @@ export async function POST(req) {
     const { url, Cookie } = await req.json();
 
     const browser = await puppeteer.launch({
-      headless: false, // Running in non-headless mode helps bypass some bot detection
+      headless: true, // Running in non-headless mode helps bypass some bot detection
       args: ["--disable-blink-features=AutomationControlled"], // Avoid detection
     });
 
