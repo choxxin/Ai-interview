@@ -100,18 +100,14 @@ export async function POST(req) {
   try {
     const { url, Cookie } = await req.json();
 
+    // const browser = await puppeteer.launch({
+    //   headless: true, // Running in non-headless mode helps bypass some bot detection
+    //   args: ["--disable-blink-features=AutomationControlled"], // Avoid detection
+    // });
     const browser = await puppeteer.launch({
-      headless: true,
-      executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || undefined, // Ensure it works in Vercel
-      args: [
-        "--no-sandbox",
-        "--disable-setuid-sandbox",
-        "--disable-dev-shm-usage",
-        "--disable-gpu",
-        "--disable-blink-features=AutomationControlled",
-      ],
+      executablePath: "/usr/bin/google-chrome-stable", // Path to the system-installed Chrome
+      args: ["--no-sandbox", "--disable-setuid-sandbox"], // Required in most server environments
     });
-
     const page = await browser.newPage();
 
     // Set user agent to mimic a real browser
