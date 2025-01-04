@@ -100,14 +100,11 @@ export async function POST(req) {
   try {
     const { url, Cookie } = await req.json();
 
-    // const browser = await puppeteer.launch({
-    //   headless: true, // Running in non-headless mode helps bypass some bot detection
-    //   args: ["--disable-blink-features=AutomationControlled"], // Avoid detection
-    // });
     const browser = await puppeteer.launch({
-      executablePath: "/usr/bin/google-chrome-stable", // Path to the system-installed Chrome
-      args: ["--no-sandbox", "--disable-setuid-sandbox"], // Required in most server environments
+      headless: true, // Running in non-headless mode helps bypass some bot detection
+      args: ["--disable-blink-features=AutomationControlled"], // Avoid detection
     });
+
     const page = await browser.newPage();
 
     // Set user agent to mimic a real browser
