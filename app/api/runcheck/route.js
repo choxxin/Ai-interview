@@ -18,11 +18,10 @@ export async function POST(req) {
       method: "GET",
       headers: headers,
     });
+    console.log(response.status, response);
     const data = await response.json();
-    console.log(data, response.status, response);
     return NextResponse.json(data);
   } catch (error) {
-    console.log(data, response.status, response);
     console.error("Error fetching submission status:", error);
     return NextResponse.json({ error: "Failed to fetch status" });
   }
