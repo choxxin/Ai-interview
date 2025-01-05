@@ -7,7 +7,7 @@ export async function POST(req) {
   const headers = {
     "Accept-Language": "en-GB,en;q=0.8",
     "Content-Type": "application/json",
-
+    Referer: refer, // Correct usage
     Referer: refer, // Correct usage
     "Sec-CH-UA-Mobile": "?1",
     "X-CSRFToken": xcsrftoken, // Correct usage
@@ -19,9 +19,10 @@ export async function POST(req) {
       headers: headers,
     });
     const data = await response.json();
-
+    console.log(data, response.status, response);
     return NextResponse.json(data);
   } catch (error) {
+    console.log(data, response.status, response);
     console.error("Error fetching submission status:", error);
     return NextResponse.json({ error: "Failed to fetch status" });
   }
