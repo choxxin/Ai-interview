@@ -76,7 +76,7 @@ const CodeEditorWithQuestion = () => {
           description:
             "Loading is taking longer than expected. It could be due to Leetcode limiting your requests , please wait or try again later",
         });
-      }, 10000); // 60 seconds
+      }, 20000); // 60 seconds
     }
 
     // Cleanup timeout when loading stops or component unmounts

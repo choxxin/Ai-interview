@@ -15,7 +15,13 @@ const CodeEditorWithQuestion = () => {
   const [questionData, setQuestionData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [link, setLink] = useState(null);
+  const [Cookie, setCookie] = useState("");
 
+  useEffect(() => {
+    const savedCookie = localStorage.getItem("Cookie");
+
+    setCookie(savedCookie);
+  }, []);
   useEffect(() => {
     // Parse query string using URLSearchParams
     const params = new URLSearchParams(window.location.search);
@@ -33,7 +39,10 @@ const CodeEditorWithQuestion = () => {
               headers: {
                 "Content-Type": "application/json",
               },
-              body: JSON.stringify({ url: queryLink }),
+              body: JSON.stringify({
+                url: queryLink,
+                Cookie: Cookie,
+              }),
             }
           );
 

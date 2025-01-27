@@ -46,3 +46,25 @@ git clone <repository-url>
 cd <project-directory>
 npm install
 ```
+
+## For more information
+
+Visit the github page https://github.com/vercel/next.js/discussions/30034
+This includes the error in configuring the puppeter in Next.js
+So i used the package **sparticuz/chromium-min** which helped me to run the puppeter in serverless artitecture like vercel without the build error.
+
+## Screenshots
+
+Here are some screenshots of the AI Interview Platform in action:
+
+1. **Home Page**  
+   ![Home Page](./public/assets/Sample.png)
+
+2. **Difficulty Selector**  
+   ![Interview Session](./public/assets/ab.png)
+
+3. **Loading Scrap**  
+   ![Question Selection](./public/assets/bb.png)
+
+4. **Code Editor**  
+   ![Progress Sync](./public/assets/cc.png)

@@ -18,7 +18,7 @@ import { useRouter } from "next/navigation";
 
 const CodeEditorWithQuestion = () => {
   const { setAi, setAiLoading } = useAistore();
-
+  const [Cookie, setCookie] = useState("");
   const [questions, setQuestions] = useState([]); // Holds loaded questions
   const [currentQuestion, setCurrentQuestion] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -2165,6 +2165,12 @@ const CodeEditorWithQuestion = () => {
   const handleFinish = () => {
     router.push("/Pages/thank"); // Navigate to the Thank You page
   };
+
+  useEffect(() => {
+    const savedCookie = localStorage.getItem("Cookie");
+
+    setCookie(savedCookie);
+  }, []);
   useEffect(() => {
     let timeout;
 
@@ -2177,7 +2183,7 @@ const CodeEditorWithQuestion = () => {
           description:
             "Loading is taking longer than expected. It could be due to Leetcode limiting your requests , please wait or try again later",
         });
-      }, 10000); // 60 seconds
+      }, 20000); // 60 seconds
     }
 
     // Cleanup timeout when loading stops or component unmounts
@@ -2194,6 +2200,7 @@ const CodeEditorWithQuestion = () => {
           },
           body: JSON.stringify({
             url: `https://leetcode.com/problems/${slug}/description`,
+            Cookie: Cookie,
           }),
         }
       );
